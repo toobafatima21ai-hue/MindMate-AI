@@ -1,47 +1,66 @@
+ import os
 import sqlite3
-import os
 
-# make sure data folder exists
-os.makedirs("data", exist_ok=True)
+# ==================================================
+# SAFE DATABASE PATH (WORKS ON STREAMLIT CLOUD)
+# ==================================================
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "mindmate.db")
 
-DB_PATH = "data/mindmate.db"
 
-
+# ==================================================
+# INIT DATABASE
+# ==================================================
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
     cur = conn.cursor()
 
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_text TEXT,
-            emotion TEXT
-        )
+    CREATE TABLE IF NOT EXISTS emotions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        emotion TEXT
+    )
     """)
 
     conn.commit()
     conn.close()
 
 
-def save_message(user_text, emotion):
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
+# ==================================================
+# SAVE EMOTION
+# ==================================================
+def save_message(emotion):
+    try:
+        conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+        cur = conn.cursor()
 
-    cur.execute(
-        "INSERT INTO messages (user_text, emotion) VALUES (?, ?)",
-        (user_text, emotion)
-    )
+        cur.execute(
+            "INSERT INTO emotions (emotion) VALUES (?)",
+            (emotion,)
+        )
 
-    conn.commit()
-    conn.close()
+        conn.commit()
+        conn.close()
+
+    except Exception as e:
+        print("DB Save Error:", e)
 
 
+# ==================================================
+# LOAD HISTORY
+# ==================================================
 def load_history():
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
+    try:
+        conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+        cur = conn.cursor()
 
-    cur.execute("SELECT emotion FROM messages")
-    data = cur.fetchall()
+        cur.execute("SELECT emotion FROM emotions")
+        rows = cur.fetchall()
 
-    conn.close()
-    return data
+        conn.close()
+
+        return rows
+
+    except Exception as e:
+        print("DB Load Error:", e)
+        return []
