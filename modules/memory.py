@@ -1,19 +1,20 @@
 import sqlite3
 import os
 
-DB_PATH = "data/memory.db"
+# make sure data folder exists
+os.makedirs("data", exist_ok=True)
+
+DB_PATH = "data/mindmate.db"
+
 
 def init_db():
-
-    os.makedirs("data", exist_ok=True)
-
     conn = sqlite3.connect(DB_PATH)
-
     cur = conn.cursor()
 
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS emotions (
+        CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_text TEXT,
             emotion TEXT
         )
     """)
@@ -22,15 +23,13 @@ def init_db():
     conn.close()
 
 
-def save_message(emotion):
-
+def save_message(user_text, emotion):
     conn = sqlite3.connect(DB_PATH)
-
     cur = conn.cursor()
 
     cur.execute(
-        "INSERT INTO emotions (emotion) VALUES (?)",
-        (emotion,)
+        "INSERT INTO messages (user_text, emotion) VALUES (?, ?)",
+        (user_text, emotion)
     )
 
     conn.commit()
@@ -38,17 +37,11 @@ def save_message(emotion):
 
 
 def load_history():
-
     conn = sqlite3.connect(DB_PATH)
-
     cur = conn.cursor()
 
-    cur.execute(
-        "SELECT emotion FROM emotions"
-    )
-
+    cur.execute("SELECT emotion FROM messages")
     data = cur.fetchall()
 
     conn.close()
-
     return data
