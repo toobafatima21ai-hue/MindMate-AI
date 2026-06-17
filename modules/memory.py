@@ -1,16 +1,16 @@
- import os
+import os
 import sqlite3
 
-# ==================================================
-# SAFE DATABASE PATH (WORKS ON STREAMLIT CLOUD)
-# ==================================================
+# ===============================
+# DATABASE PATH (SAFE FOR CLOUD)
+# ===============================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "mindmate.db")
 
 
-# ==================================================
+# ===============================
 # INIT DATABASE
-# ==================================================
+# ===============================
 def init_db():
     conn = sqlite3.connect(DB_PATH, check_same_thread=False)
     cur = conn.cursor()
@@ -26,41 +26,32 @@ def init_db():
     conn.close()
 
 
-# ==================================================
+# ===============================
 # SAVE EMOTION
-# ==================================================
+# ===============================
 def save_message(emotion):
-    try:
-        conn = sqlite3.connect(DB_PATH, check_same_thread=False)
-        cur = conn.cursor()
+    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+    cur = conn.cursor()
 
-        cur.execute(
-            "INSERT INTO emotions (emotion) VALUES (?)",
-            (emotion,)
-        )
+    cur.execute(
+        "INSERT INTO emotions (emotion) VALUES (?)",
+        (emotion,)
+    )
 
-        conn.commit()
-        conn.close()
-
-    except Exception as e:
-        print("DB Save Error:", e)
+    conn.commit()
+    conn.close()
 
 
-# ==================================================
+# ===============================
 # LOAD HISTORY
-# ==================================================
+# ===============================
 def load_history():
-    try:
-        conn = sqlite3.connect(DB_PATH, check_same_thread=False)
-        cur = conn.cursor()
+    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+    cur = conn.cursor()
 
-        cur.execute("SELECT emotion FROM emotions")
-        rows = cur.fetchall()
+    cur.execute("SELECT emotion FROM emotions")
+    rows = cur.fetchall()
 
-        conn.close()
+    conn.close()
 
-        return rows
-
-    except Exception as e:
-        print("DB Load Error:", e)
-        return []
+    return rows
