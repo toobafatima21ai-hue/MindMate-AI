@@ -9,7 +9,7 @@ from modules.memory import init_db, save_message, load_history
 from modules.rag import retrieve_context
 
 # ==================================================
-# DATABASE INITIALIZATION
+# INIT DB
 # ==================================================
 init_db()
 
@@ -23,74 +23,32 @@ st.set_page_config(
 )
 
 # ==================================================
-# CUSTOM CSS
+# UI DESIGN
 # ==================================================
 st.markdown("""
 <style>
 
-/* Main Background */
 .stApp {
-    background: linear-gradient(
-        135deg,
-        #E3F2FD,
-        #F8F9FA
-    );
+    background: linear-gradient(135deg, #E3F2FD, #F8F9FA);
 }
 
-/* Titles */
+/* Title */
 h1 {
     color: #1565C0 !important;
     text-align: center;
     font-weight: 800;
 }
 
-h2, h3 {
-    color: #0D47A1 !important;
-}
-
-/* Text */
-p, label {
-    color: #212121 !important;
-}
-
-/* Chat Input */
-textarea {
-    background-color: white !important;
-    color: black !important;
-    border-radius: 12px !important;
-}
-
 /* Buttons */
 .stButton > button {
-    background: linear-gradient(
-        90deg,
-        #42A5F5,
-        #1E88E5
-    ) !important;
-
+    background: linear-gradient(90deg, #42A5F5, #1E88E5) !important;
     color: white !important;
-    border: none !important;
+    border-radius: 12px;
+}
+
+/* Chat box */
+textarea {
     border-radius: 12px !important;
-    font-weight: bold !important;
-}
-
-/* Metric Cards */
-[data-testid="metric-container"] {
-    background-color: white;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
-}
-
-/* Sidebar */
-section[data-testid="stSidebar"] {
-    background-color: #ffffff;
-}
-
-/* Charts */
-.js-plotly-plot {
-    background-color: white;
-    border-radius: 12px;
 }
 
 </style>
@@ -101,9 +59,8 @@ section[data-testid="stSidebar"] {
 # ==================================================
 st.markdown("""
 <h1>💛🧘 MindMate AI</h1>
-
-<h4 style='text-align:center;color:#555;'>
-Your Emotional Support & Wellness Companion 💙
+<h4 style='text-align:center;color:gray;'>
+Your Emotional Support & Wellness Companion
 </h4>
 """, unsafe_allow_html=True)
 
@@ -113,19 +70,17 @@ Your Emotional Support & Wellness Companion 💙
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+if "emotion_history" not in st.session_state:
+    st.session_state.emotion_history = []
+
 # ==================================================
-# DASHBOARD CARDS
+# DASHBOARD METRICS
 # ==================================================
 col1, col2, col3 = st.columns(3)
 
-with col1:
-    st.metric("Mood Status", "Active")
-
-with col2:
-    st.metric("Support Mode", "Empathetic")
-
-with col3:
-    st.metric("AI Assistant", "Online")
+col1.metric("Mood Status", "Active")
+col2.metric("Support Mode", "Empathetic")
+col3.metric("AI Assistant", "Online")
 
 st.divider()
 
@@ -137,21 +92,18 @@ for msg in st.session_state.messages:
         st.write(msg["content"])
 
 # ==================================================
-# CHAT INPUT
+# INPUT
 # ==================================================
-user_input = st.chat_input(
-    "How are you feeling today?"
-)
+user_input = st.chat_input("How are you feeling today?")
+
+response = None  # 🔥 FIX: prevent undefined variable error
 
 if user_input:
 
-    # USER MESSAGE
-    st.session_state.messages.append(
-        {
-            "role": "user",
-            "content": user_input
-        }
-    )
+    st.session_state.messages.append({
+        "role": "user",
+        "content": user_input
+    })
 
     with st.chat_message("user"):
         st.write(user_input)
@@ -164,13 +116,12 @@ if user_input:
         response = """
 ⚠️ Crisis Detected
 
-Please contact:
+Please reach out to:
+- Emergency Services
+- Mental Health Professional
+- Trusted Person
 
-• Emergency Services
-• A Mental Health Professional
-• A Trusted Friend or Family Member
-
-You do not need to handle this alone.
+You are not alone 💛
 """
 
         with st.chat_message("assistant"):
@@ -182,85 +133,58 @@ You do not need to handle this alone.
         # EMOTION DETECTION
         # ==================================================
         emotion_data = detect_emotion(user_input)
-
         emotion = emotion_data["emotion"]
         confidence = emotion_data["confidence"]
 
-        st.info(
-            f"Detected Emotion: {emotion} ({confidence:.2f}%)"
-        )
+        st.info(f"Detected Emotion: {emotion} ({confidence:.2f}%)")
+
+        # store locally for instant UI analytics
+        st.session_state.emotion_history.append(emotion)
 
         # ==================================================
-        # RAG KNOWLEDGE RETRIEVAL
+        # RAG CONTEXT
         # ==================================================
         context = retrieve_context(user_input)
 
-        with st.expander(
-            "📚 Wellness Knowledge Used"
-        ):
+        with st.expander("📚 Wellness Knowledge Used"):
             st.write(context)
 
         # ==================================================
-        # RESPONSE GENERATION
+        # LLM RESPONSE
         # ==================================================
-        response = generate_response(
-            user_input,
-            emotion,
-            context
-        )
+        response = generate_response(user_input, emotion, context)
 
         with st.chat_message("assistant"):
             st.write(response)
 
-        # ==================================================
-        # SAVE TO DATABASE
-        # ==================================================
+        # save to DB
         save_message(emotion)
 
-    # ==================================================
-    # SAVE CHAT
-    # ==================================================
-    st.session_state.messages.append(
-        {
-            "role": "assistant",
-            "content": response
-        }
-    )
+    # store chat
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": response
+    })
 
 # ==================================================
 # ANALYTICS
 # ==================================================
 st.divider()
-
 st.header("📊 Mood Analytics Dashboard")
 
-history = load_history()
+# 🔥 FIX: use session_state (real-time correct charts)
+history = st.session_state.emotion_history
 
 if history:
 
-    df = pd.DataFrame(
-        history,
-        columns=["Emotion"]
-    )
+    df = pd.DataFrame(history, columns=["Emotion"])
 
-    emotion_counts = (
-        df["Emotion"]
-        .value_counts()
-        .reset_index()
-    )
-
-    emotion_counts.columns = [
-        "Emotion",
-        "Count"
-    ]
+    emotion_counts = df["Emotion"].value_counts().reset_index()
+    emotion_counts.columns = ["Emotion", "Count"]
 
     col1, col2 = st.columns(2)
 
-    # =====================================
-    # BAR CHART
-    # =====================================
     with col1:
-
         fig_bar = px.bar(
             emotion_counts,
             x="Emotion",
@@ -268,60 +192,31 @@ if history:
             color="Emotion",
             title="Emotion Distribution"
         )
+        st.plotly_chart(fig_bar, use_container_width=True)
 
-        st.plotly_chart(
-            fig_bar,
-            use_container_width=True
-        )
-
-    # =====================================
-    # PIE CHART
-    # =====================================
     with col2:
-
         fig_pie = px.pie(
             emotion_counts,
             names="Emotion",
             values="Count",
             title="Emotion Breakdown"
         )
+        st.plotly_chart(fig_pie, use_container_width=True)
 
-        st.plotly_chart(
-            fig_pie,
-            use_container_width=True
-        )
-
-    # =====================================
+    # ==================================================
     # WELLNESS SCORE
-    # =====================================
-    positive_emotions = [
-        "joy",
-        "happy",
-        "love",
-        "optimism"
-    ]
+    # ==================================================
+    positive_emotions = ["joy", "happy", "love", "optimism"]
 
     positive_count = sum(
-        1
-        for item in history
-        if item[0].lower() in positive_emotions
+        1 for e in history if e.lower() in positive_emotions
     )
 
-    score = min(
-        positive_count * 10,
-        100
-    )
+    score = min(positive_count * 10, 100)
 
     st.subheader("🌟 Wellness Score")
-
     st.progress(score / 100)
-
-    st.success(
-        f"Current Wellness Score: {score}/100"
-    )
+    st.success(f"Current Wellness Score: {score}/100")
 
 else:
-
-    st.info(
-        "No emotion history available yet."
-    )
+    st.info("No emotion history available yet.")
