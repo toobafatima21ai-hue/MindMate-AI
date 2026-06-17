@@ -1,0 +1,12 @@
+streamlit
+huggingface_hub
+python-dotenv
+pandas
+plotly
+scikit-learn
+transformers
+torch
+sentence-transformers
+chromadb
+torchvision
+torchaudio
