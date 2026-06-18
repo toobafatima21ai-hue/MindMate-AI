@@ -4,7 +4,7 @@
 ## 🌐 Live Demo
 
  Try the live application here:  
-👉 https://mindmatex2zsqqukchyuzaeuw7qfof.streamlit.app/
+👉  https://mindmatenhj3meaicbji7vkweappxhi.streamlit.app/
 
 ---
 
