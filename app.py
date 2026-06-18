@@ -181,15 +181,12 @@ if history:
 ```
 df = pd.DataFrame(
     history,
-    columns=[
-        "Emotion",
-        "Timestamp"
-    ]
+    columns=["Emotion", "Timestamp"]
 )
 
-# =====================================
+# ===============================
 # SUMMARY METRICS
-# =====================================
+# ===============================
 total_conversations = len(df)
 
 latest_emotion = df.iloc[0]["Emotion"]
@@ -205,21 +202,21 @@ emotion_counts.columns = [
     "Count"
 ]
 
-colA, colB, colC = st.columns(3)
+metric1, metric2, metric3 = st.columns(3)
 
-with colA:
+with metric1:
     st.metric(
         "Total Conversations",
         total_conversations
     )
 
-with colB:
+with metric2:
     st.metric(
         "Latest Emotion",
         latest_emotion
     )
 
-with colC:
+with metric3:
     st.metric(
         "Unique Emotions",
         len(emotion_counts)
@@ -227,9 +224,9 @@ with colC:
 
 st.divider()
 
-# =====================================
+# ===============================
 # CHARTS
-# =====================================
+# ===============================
 col1, col2 = st.columns(2)
 
 with col1:
@@ -241,10 +238,6 @@ with col1:
         color="Emotion",
         text="Count",
         title="Emotion Distribution"
-    )
-
-    fig_bar.update_layout(
-        template="plotly_white"
     )
 
     st.plotly_chart(
@@ -266,9 +259,9 @@ with col2:
         use_container_width=True
     )
 
-# =====================================
+# ===============================
 # MOOD TREND
-# =====================================
+# ===============================
 st.subheader("📈 Mood Trend")
 
 emotion_scores = {
@@ -284,11 +277,8 @@ emotion_scores = {
 
 trend_df = df.copy()
 
-trend_df["Score"] = trend_df[
-    "Emotion"
-].apply(
-    lambda x:
-    emotion_scores.get(
+trend_df["Score"] = trend_df["Emotion"].apply(
+    lambda x: emotion_scores.get(
         str(x).lower(),
         5
     )
@@ -299,13 +289,11 @@ trend_df["Timestamp"] = pd.to_datetime(
 )
 
 fig_line = px.line(
-    trend_df.sort_values(
-        "Timestamp"
-    ),
+    trend_df.sort_values("Timestamp"),
     x="Timestamp",
     y="Score",
-    title="Mood Trend Over Time",
-    markers=True
+    markers=True,
+    title="Mood Trend Over Time"
 )
 
 st.plotly_chart(
@@ -313,9 +301,9 @@ st.plotly_chart(
     use_container_width=True
 )
 
-# =====================================
+# ===============================
 # WELLNESS SCORE
-# =====================================
+# ===============================
 avg_score = int(
     trend_df["Score"].mean() * 10
 )
@@ -336,6 +324,3 @@ st.info(
     "No emotion history available yet."
 )
 ```
-
- 
-    st.info("No emotion history available yet.")
