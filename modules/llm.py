@@ -1,68 +1,98 @@
 from datetime import datetime
+import pytz
 
 def generate_response(user_input, emotion, context):
 
-    emotion = emotion.lower()
+    pakistan = pytz.timezone("Asia/Karachi")
 
-    responses = {
-        "sadness": (
-            "I'm sorry you're feeling this way. "
-            "It may help to talk with someone you trust, take a short break, "
-            "or write down what is bothering you."
-        ),
+    current_time = datetime.now(
+        pakistan
+    ).strftime("%I:%M %p")
 
-        "anger": (
-            "It sounds like you're frustrated. "
-            "Taking a few deep breaths or stepping away from the situation "
-            "for a short time may help."
-        ),
+    emotion_responses = {
 
-        "fear": (
-            "Feeling worried or afraid can be overwhelming. "
-            "Try focusing on what is within your control and take things one step at a time."
-        ),
-
-        "joy": (
-            "It's wonderful that you're feeling positive. "
-            "Take a moment to appreciate what contributed to this feeling."
-        ),
-
-        "love": (
-            "Strong positive connections can be very meaningful. "
-            "Nurturing supportive relationships often improves well-being."
-        ),
-
-        "surprise": (
-            "Unexpected situations can bring many emotions. "
-            "Take some time to process what happened."
-        )
-    }
-
-    base_response = responses.get(
-        emotion,
-        "Thank you for sharing how you're feeling. "
-        "Your emotions are valid, and it's important to take care of yourself."
-    )
-
-    final_response = f"""
+        "joy":
+        f"""
 💙 MindMate AI Support
 
-I understand that you may be experiencing **{emotion}**.
+That's wonderful to hear.
 
-{base_response}
+Positive moments deserve recognition and appreciation.
 
 📚 Wellness Insight:
 {context}
 
-🌱 Small Action for Today:
-Take 5 minutes to focus on yourself, whether through deep breathing,
-stretching, journaling, or a short walk.
+🌱 Challenge:
+Write down one thing you're grateful for today.
 
-⚠️ Reminder:
-MindMate AI provides emotional support and wellness guidance only.
-It is not a substitute for professional mental health care.
+🕒 Time: {current_time}
+""",
 
-Time: {datetime.now().strftime("%H:%M")}
+        "fear":
+        f"""
+💙 MindMate AI Support
+
+It sounds like uncertainty is weighing on your mind.
+
+Fear often grows when we focus on outcomes we cannot fully control.
+
+📚 Wellness Insight:
+{context}
+
+🌱 Challenge:
+Focus on one small action you can take today.
+
+🕒 Time: {current_time}
+""",
+
+        "sadness":
+        f"""
+💙 MindMate AI Support
+
+I'm sorry you're having a difficult time.
+
+Remember that difficult emotions are temporary.
+
+📚 Wellness Insight:
+{context}
+
+🌱 Challenge:
+Reach out to someone you trust.
+
+🕒 Time: {current_time}
+""",
+
+        "anger":
+        f"""
+💙 MindMate AI Support
+
+It sounds like something has frustrated or upset you.
+
+Taking a pause before reacting can help.
+
+📚 Wellness Insight:
+{context}
+
+🌱 Challenge:
+Take a 5-minute walk or breathing break.
+
+🕒 Time: {current_time}
 """
+    }
 
-    return final_response
+    return emotion_responses.get(
+        emotion.lower(),
+        f"""
+💙 MindMate AI Support
+
+Thank you for sharing your feelings.
+
+📚 Wellness Insight:
+{context}
+
+🌱 Small Action:
+Take care of yourself today.
+
+🕒 Time: {current_time}
+"""
+    )
