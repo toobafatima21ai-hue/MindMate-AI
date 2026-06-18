@@ -1,10 +1,14 @@
 from datetime import datetime
 
-
+# ==================================================
+# RESPONSE GENERATION ENGINE (RULE-BASED LLM STYLE)
+# ==================================================
 def generate_response(user_input, emotion, context):
 
-    # simple system time (no pytz → avoids errors)
+    # system time (simple, no pytz → stable for deployment)
     current_time = datetime.now().strftime("%I:%M %p")
+
+    base_context = context if context else "Focus on general mental wellness and self-care."
 
     emotion_responses = {
 
@@ -13,13 +17,13 @@ def generate_response(user_input, emotion, context):
 
 That's wonderful to hear 😊
 
-Positive emotions are very important for mental well-being.
+It's important to acknowledge and appreciate positive emotions.
 
 📚 Wellness Insight:
-{context}
+{base_context}
 
-🌱 Challenge:
-Write down one thing you're grateful for today.
+🌱 Reflection:
+Write down 3 things you're grateful for today.
 
 🕒 Time: {current_time}
 """,
@@ -27,15 +31,15 @@ Write down one thing you're grateful for today.
         "fear": f"""
 💙 MindMate AI Support
 
-It sounds like you're feeling anxious or uncertain.
+It sounds like you're experiencing fear or anxiety.
 
-Fear is a natural response, but it can be managed step by step.
+Try to ground yourself in the present moment.
 
 📚 Wellness Insight:
-{context}
+{base_context}
 
-🌱 Challenge:
-Focus on one small thing you can control today.
+🌱 Exercise:
+Focus on one small controllable action today.
 
 🕒 Time: {current_time}
 """,
@@ -43,15 +47,15 @@ Focus on one small thing you can control today.
         "sadness": f"""
 💙 MindMate AI Support
 
-I'm really sorry you're feeling low right now.
+I'm really sorry you're feeling this way.
 
-It's okay to feel this way — emotions are temporary.
+Sadness is valid and temporary.
 
 📚 Wellness Insight:
-{context}
+{base_context}
 
-🌱 Challenge:
-Talk to someone you trust or write your thoughts down.
+🌱 Support Step:
+Talk to someone you trust or express your thoughts in writing.
 
 🕒 Time: {current_time}
 """,
@@ -59,31 +63,36 @@ Talk to someone you trust or write your thoughts down.
         "anger": f"""
 💙 MindMate AI Support
 
-It sounds like you're feeling upset or frustrated.
+It seems you're feeling frustrated or angry.
 
-Take a moment before reacting — breathe slowly.
+Taking a pause can help regulate emotions.
 
 📚 Wellness Insight:
-{context}
+{base_context}
 
-🌱 Challenge:
-Step away for a few minutes and relax your mind.
+🌱 Action Step:
+Take a short break, breathe deeply, and reset your mind.
 
 🕒 Time: {current_time}
 """
     }
 
+    # ==================================================
+    # DEFAULT RESPONSE (IMPORTANT FOR UNSEEN EMOTIONS)
+    # ==================================================
     return emotion_responses.get(
         emotion.lower(),
         f"""
 💙 MindMate AI Support
 
-Thank you for sharing your feelings.
+Thank you for sharing how you feel.
+
+Every emotion is valid and important.
 
 📚 Wellness Insight:
-{context}
+{base_context}
 
-🌱 Small Action:
+🌱 Small Step:
 Take care of yourself today — one step at a time.
 
 🕒 Time: {current_time}
