@@ -1,23 +1,19 @@
 from datetime import datetime
- 
+
 
 def generate_response(user_input, emotion, context):
 
-    pakistan = pytz.timezone("Asia/Karachi")
-
-    current_time = datetime.now(
-        pakistan
-    ).strftime("%I:%M %p")
+    # simple system time (no pytz → avoids errors)
+    current_time = datetime.now().strftime("%I:%M %p")
 
     emotion_responses = {
 
-        "joy":
-        f"""
+        "joy": f"""
 💙 MindMate AI Support
 
-That's wonderful to hear.
+That's wonderful to hear 😊
 
-Positive moments deserve recognition and appreciation.
+Positive emotions are very important for mental well-being.
 
 📚 Wellness Insight:
 {context}
@@ -28,53 +24,50 @@ Write down one thing you're grateful for today.
 🕒 Time: {current_time}
 """,
 
-        "fear":
-        f"""
+        "fear": f"""
 💙 MindMate AI Support
 
-It sounds like uncertainty is weighing on your mind.
+It sounds like you're feeling anxious or uncertain.
 
-Fear often grows when we focus on outcomes we cannot fully control.
+Fear is a natural response, but it can be managed step by step.
 
 📚 Wellness Insight:
 {context}
 
 🌱 Challenge:
-Focus on one small action you can take today.
+Focus on one small thing you can control today.
 
 🕒 Time: {current_time}
 """,
 
-        "sadness":
-        f"""
+        "sadness": f"""
 💙 MindMate AI Support
 
-I'm sorry you're having a difficult time.
+I'm really sorry you're feeling low right now.
 
-Remember that difficult emotions are temporary.
+It's okay to feel this way — emotions are temporary.
 
 📚 Wellness Insight:
 {context}
 
 🌱 Challenge:
-Reach out to someone you trust.
+Talk to someone you trust or write your thoughts down.
 
 🕒 Time: {current_time}
 """,
 
-        "anger":
-        f"""
+        "anger": f"""
 💙 MindMate AI Support
 
-It sounds like something has frustrated or upset you.
+It sounds like you're feeling upset or frustrated.
 
-Taking a pause before reacting can help.
+Take a moment before reacting — breathe slowly.
 
 📚 Wellness Insight:
 {context}
 
 🌱 Challenge:
-Take a 5-minute walk or breathing break.
+Step away for a few minutes and relax your mind.
 
 🕒 Time: {current_time}
 """
@@ -91,7 +84,7 @@ Thank you for sharing your feelings.
 {context}
 
 🌱 Small Action:
-Take care of yourself today.
+Take care of yourself today — one step at a time.
 
 🕒 Time: {current_time}
 """
